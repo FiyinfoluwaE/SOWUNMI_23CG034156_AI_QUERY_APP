@@ -37,6 +37,8 @@ def setup_local_db():
     except Exception as e:
         print(f"Database Error: {e}")
 
+setup_local_db() # Ensure DB exists on start
+
 @web_portal.route('/')
 def home_page():
     """Serves the frontend HTML."""
