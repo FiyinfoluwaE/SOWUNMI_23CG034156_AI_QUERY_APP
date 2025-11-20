@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Assistant Portal</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <header>
+        <h1>🤖 Intelligent Query Assistant</h1>
+        <p>Powered by Gemini AI</p>
+      </header>
+
+      <main class="chat-interface">
+        <div class="input-zone">
+          <textarea
+            id="user-input"
+            placeholder="Type your question here..."
+          ></textarea>
+          <button id="submit-btn" onclick="sendToBackend()">Ask AI</button>
+        </div>
+
+        <div id="loader" class="hidden">Thinking...</div>
+
+        <div class="result-zone hidden" id="result-box">
+          <h3>AI Response:</h3>
+          <p id="ai-output"></p>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      async function sendToBackend() {
+        const inputField = document.getElementById("user-input");
+        const resultBox = document.getElementById("result-box");
+        const outputText = document.getElementById("ai-output");
+        const loader = document.getElementById("loader");
+
+        const question = inputField.value.trim();
+        if (!question) return alert("Please type a question first.");
+
+        // UI updates
+        resultBox.classList.add("hidden");
+        loader.classList.remove("hidden");
+
+        try {
+          const serverResponse = await fetch("/process_request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query_text: question }),
+          });
+
+          const data = await serverResponse.json();
+
+          if (data.error) {
+            outputText.innerText = "Error: " + data.error;
+          } else {
+            outputText.innerText = data.response_text;
+          }
+
+          resultBox.classList.remove("hidden");
+        } catch (err) {
+          alert("Failed to connect to server.");
+        } finally {
+          loader.classList.add("hidden");
+        }
+      }
+    </script>
+  </body>
+</html>
